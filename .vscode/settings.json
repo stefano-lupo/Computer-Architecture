@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "functions.h": "c",
-        "asmfunctions.h": "c",
-        "stdio.h": "c",
-        "asmconstants.h": "c"
-    }
-}
