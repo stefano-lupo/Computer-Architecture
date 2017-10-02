@@ -4,5 +4,8 @@
 
 
 int main() {
-    printf("\nHello I am here \n%d\n", asm_foo( 1, 2, 3));
+    int a = 5, b = 0, c = -7;
+    printf("\nThe Minimum of %d, %d, %d is %d\n", a, b, c, min(a,b,c));
+
+    return 0;
 }
