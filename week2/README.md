@@ -125,6 +125,7 @@ return:
 
 
 # Q2: Stack for gcd(14, 21)
+In computing the gcd of 14 and 21, code execution would be as follows:
 ```
 1 gcd(14,21)
    b != 0
@@ -141,6 +142,10 @@ return:
 ```
    
 This shows that the maximum depth of stack (in stack frames) is 4.
+   
+This means the stack would contain the following:
+
+![Stack at Max Depth](stack_max_depth.png)
 
 # Q3: Testing the Functions *(test.c)*
 This small C program can test each of the functions.   
