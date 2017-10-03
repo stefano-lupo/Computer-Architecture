@@ -9,7 +9,7 @@ Module: CS3421 Computer Architecture II
 # Q1 IA32 Code for the Three Functions
 ## int min(int a, int b, int c)
 This function returns the minimum of `a`, `b`, and `c`.
-```
+```Assembly
 min:
   // Save context
   push ebp                  // Save old frame pointer
