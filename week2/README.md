@@ -75,7 +75,7 @@ p:
 ```
 
 ## int gcd(int a, int b)
-This recusrive function find the greatest common divisor of `a` and `b`. 
+This recusrive function find the greatest common divisor of `a` and `b`.   
 ```Assembly
 gcd: 
   // Save context
@@ -128,6 +128,7 @@ return:
 // TODO
 
 # Q3: Testing the Functions *(test.c)*
+This small C program can test each of the functions.   
 ```c
 #include <stdio.h>
 #include <time.h>
@@ -169,4 +170,7 @@ int main() {
     return 0;
 }
 ```
+   
+This produced the following console output, indiciating that all of the functions work correctly.   
+![Console Output](console_output.png)
 
