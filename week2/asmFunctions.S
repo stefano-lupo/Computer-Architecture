@@ -16,17 +16,16 @@
 g: .quad 4
 
 
-
 /*
   Min - Returns minimum of three parameters passed in
   int min(int a, int b, int c) - (a = ebp+8, b = epb+12, c = ebp+16, v = epb-4)
 */
 min:
-  // Persist context
+  // Save context
   push ebp                  // Save old frame pointer
   mov ebp, esp              // Set our new frame pointer
   sub esp, 4                // Allocate space for local variables
-                            // Save non volatile registers (ebx)
+  // NA                     // Save non volatile registers (ebx)
   
   mov eax, [ebp + 8]        // eax = a
   mov [ebp-4], eax          // v = a
@@ -38,7 +37,7 @@ min:
 
 b_greatereq_v:
   mov eax, [ebp+16]         // eax = c
-  mov ecx, [ebp-4]         // ecx = v
+  mov ecx, [ebp-4]          // ecx = v
   cmp eax, ecx
   jge c_greatereq_v
   mov eax, [ebp+16]         // eax = c
@@ -59,11 +58,11 @@ c_greatereq_v:
   int p(int i [ebp+8], int j [ebp+12], int k [ebp+16], int l [ebp+20])
 */
 p: 
-  // Persist context
+  // Save context
   push ebp                  // Save old frame pointer
   mov ebp, esp              // Set our new frame pointer
   sub esp, 4                // Allocate space for local variables
-                            // Save non volatile registers (ebx)
+  // NA                     // Save non volatile registers (ebx)
 
   // v = min(g, i, j)
   push [ebp+12]             // push j
@@ -86,34 +85,38 @@ p:
 
 
 /*
-  gcd - does something
+  gcd - Returns the greatest common divisor of two parameters
   int gcd(int a [ebp+8], int b[ebp+12])
  
 */
   gcd: 
-  // Persist context
+  // Save context
   push ebp                  // Save old frame pointer
   mov ebp, esp              // Set our new frame pointer
-                            // Allocate space for local variables
-                            // Save non volatile registers (ebx)
+  // NA                     // Allocate space for local variables
+  // NA                     // Save non volatile registers (ebx)
 
   // Check if b is zero
   mov eax, [ebp+12]         // eax = b
-  test eax, eax             // eax && eax (zero if eax was 0)
+  test eax, eax             // eax && eax (zero iff eax was 0)
   je zero
 
-  // get a % b
-  mov eax, [ebp+8]            // eax = a
-  mov ecx, [ebp+12]           // ecx = b
 
-  // Note div assumes eax is dividend(top)
-  xor edx,edx                // clear destination register 
-  div ecx                    // ecx = eax / ecx, eax = eax % ecx 
+  /*
+    div divides the 64 bits across EDX|EAX by the operand
+    div stores the result of the division in EAX and the remainder in EDX
+  */
+
+  // Set up operands, compute a % b
+  xor edx, edx              // Clear upper 32 bits
+  mov eax, [ebp+8]          // eax = a (numerator)
+  mov ecx, [ebp+12]         // ecx = b (denominator)
+  div ecx                   // eax = (edx|eax / ecx, edx = (edx|eax) % ecx
 
   // push parameters
-  push eax                   // push a % b
-  mov eax, [ebp+12]          // eax = b
-  push eax                   // push b
+  push edx                  // push a % b
+  mov eax, [ebp+12]         // eax = b
+  push eax                  // push b
 
   // recurse
   call gcd
@@ -130,4 +133,3 @@ return:
   mov esp, ebp
   pop ebp
   ret 0
-
