@@ -6,9 +6,9 @@ Course: Computer Engineering
 Module: CS3421 Computer Architecture II   
    
 
-
+# Q1 IA32 Code for the Three Functions
 ## int min(int a, int b, int c)
-This function returns the minimum of a, b, and c.
+This function returns the minimum of `a`, `b`, and `c`.
 ```Assembly
 min:
   // Save context
@@ -73,3 +73,100 @@ p:
   pop ebp
   ret 0
 ```
+
+## int gcd(int a, int b)
+This recusrive function find the greatest common divisor of `a` and `b`. 
+```Assembly
+gcd: 
+  // Save context
+  push ebp                  // Save old frame pointer
+  mov ebp, esp              // Set our new frame pointer
+  // NA                     // Allocate space for local variables
+  // NA                     // Save non volatile registers (ebx)
+
+  // Check if b is zero
+  mov eax, [ebp+12]         // eax = b
+  test eax, eax             // eax && eax (zero iff eax was 0)
+  je zero
+
+
+  /*
+    div divides the 64 bits across EDX|EAX by the operand
+    div stores the result of the division in EAX and the remainder in EDX
+  */
+
+  // Set up operands, compute a % b
+  xor edx, edx              // Clear upper 32 bits
+  mov eax, [ebp+8]          // eax = a (numerator)
+  mov ecx, [ebp+12]         // ecx = b (denominator)
+  div ecx                   // eax = (edx|eax / ecx, edx = (edx|eax) % ecx
+
+  // push parameters
+  push edx                  // push a % b
+  mov eax, [ebp+12]         // eax = b
+  push eax                  // push b
+
+  // recurse
+  call gcd
+
+  // pop two pushed parameters
+  sub esp, 8
+  jmp return
+ 
+zero:
+  mov eax, [ebp+8]          // return a
+
+return: 
+  // Restore context
+  mov esp, ebp
+  pop ebp
+  ret 0
+```
+
+
+# Q2: Stack for gcd(14, 21)
+// TODO
+
+# Q3: Testing the Functions *(test.c)*
+```c
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+
+#include "asmFunctions.h"
+
+int actualGCD(int a, int b) {
+    if(b==0) {
+        return a;
+    }
+
+    return actualGCD(b, (a % b));
+}
+
+int main() {
+    // Set seed for random numbers
+    srand(time(NULL));
+
+    int a = 99, b = 30, c = 7, d = 10;
+    printf("\nMin: The minimum of %d, %d, %d is %d\n", a, b, c, min(a,b,c));
+    printf("P: The minimum of %d, %d, %d, %d and %d is %d\n", a, b, c, d, g, p(a,b,c,d));
+    printf("\nGCD: gcd(%d,%d) = %d\n", a, b, gcd(a, b));
+    printf("actualGCDcd(%d, %d) = %d\n\n", a, b, actualGCD(a, b));
+
+    // Test two algorithms 100 times
+    for(int i=0;i<100;i++) {
+        int x = rand() % 100, y = rand() % 100;
+        int actual = actualGCD(x,y);
+        int assembly = gcd(x,y);
+        if(actual != assembly) {
+            printf("Error in algorithm\n");
+            printf("gcd(%d, %d) = %d but algorithm returned %d\n\n", x, y, actual, assembly);
+            exit(0);
+        } 
+    }   
+
+    printf("100 tests were successfull\n\n");   
+    return 0;
+}
+```
+
