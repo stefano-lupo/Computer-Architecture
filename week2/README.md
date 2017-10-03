@@ -125,7 +125,22 @@ return:
 
 
 # Q2: Stack for gcd(14, 21)
-// TODO
+```
+1 gcd(14,21)
+   b != 0
+   return gcd(b, a % b) - return gcd(21, 14)
+2 gcd(21, 14)
+   b != 0
+   return gcd(b, a % b) - return gcd(14, 7)
+3 gcd(14, 7)
+   b != 0
+   return gcd(b, a % b) - return gcd(7, 0)
+4 gcd(7, 0)
+   b == 0
+   return a - return 7
+```
+   
+This shows that the maximum depth of stack (in stack frames) is 4.
 
 # Q3: Testing the Functions *(test.c)*
 This small C program can test each of the functions.   
