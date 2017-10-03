@@ -171,6 +171,7 @@ int main() {
 }
 ```
    
-This produced the following console output, indiciating that all of the functions work correctly.   
+This produced the following console output, indiciating that all of the functions work correctly.
+   
 ![Console Output](console_output.png)
 
