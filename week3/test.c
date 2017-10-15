@@ -17,8 +17,8 @@ int main() {
     srand(time(NULL));
 
     int64_t a = 100, b = 50, c = -3, d = -15;
-    printf("\nMin: The minimum of %" PRId64 ", %" PRId64 ", %" PRId64 " is %" PRId64 "\n", a, b, c, min(a,b,c));
-    printf("P: The minimum of %" PRId64 ", %" PRId64 ", %" PRId64 ", %" PRId64 " and g is %" PRId64" \n", a, b, c, d, p(a,b,c,d));
+    printf("Min: The minimum of %" PRId64 ", %" PRId64 ", %" PRId64 " is %" PRId64 "\n", a, b, c, min(a,b,c));
+    printf("P: The minimum of %" PRId64 ", %" PRId64 ", %" PRId64 ", %" PRId64 " and g (4) is %" PRId64" \n", a, b, c, d, p(a,b,c,d));
 
     printf("\nGCD: gcd(%" PRId64 ",%" PRId64 ") = %" PRId64 "\n", a, b, gcd(a, b));
     printf("actualGCDcd(%" PRId64 ", %" PRId64 ") = %" PRId64 "\n\n", a, b, actualGCD(a, b));
@@ -33,13 +33,12 @@ int main() {
             printf("Error in algorithm\n");
             printf("gcd(%d, %d) = %d but algorithm returned %d\n\n", x, y, actual, assembly);
             exit(0);
-        } else if(actual != 1) {
-            // printf("GCD: gcd(%" PRId64 ",%" PRId64 ") = %" PRId64 "\n", x, y, assembly);
-            // printf("actualGCDcd(%" PRId64 ", %" PRId64 ") = %" PRId64 "\n\n", x, y, actual);
         }
     }   
-
     printf("100 tests were successfull\n\n");   
-    printf("%" PRId64 "\n",q(1,2,3,4,5));
+    
+    // q();
+    // shadowSpace();
+
     return 0;
 }

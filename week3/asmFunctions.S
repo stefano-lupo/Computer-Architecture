@@ -1,24 +1,24 @@
 .intel_syntax noprefix
 .section .text
 
+
+// Define globals
+.DATA
+g: .quad 4  
+
+format: .ascii	"%s\0"
+
+
 // Export the following
-.globl min, p, gcd, q
+.globl min, p, gcd, q, shadowSpace
 
 // Define types of the following
 .type min, @function
 .type p, @function
 .type gcd, @function
 .type q, @function
+.type shadowSpace, @function
 
-// Define globals
-.DATA
-g: .quad 4  
-
-fmt:
-	.string	"%d\n"
-	.text
-	.globl	q
-	.type	q, @function
 
 
 /****************************************************
@@ -161,13 +161,42 @@ q:
   add rax, r8
   add rax, r9
   add rax, r10
+  push rax                  // save sum to stack before calling printf
 
-  
+  sub rsp, 32               // Allocate shadow space for printf
+
+  lea rcx, format
+  mov rdx, 99
+  call printf
+
+  add rsp, 32               // deallocate shadow space
+  pop rax                   // retrieve sum
+
 
   // Restore context
   mov rsp, rbp
   pop rbp
   ret
+
+
+/*
+  This function shows that printf will not function correctly unless shadown space allocated
+*/
+shadowSpace:
+  // Save context
+  push rbp                  // Save old frame pointer
+  mov rbp, rsp              // Set our new frame pointer
+
+  lea rcx, format
+  mov rdx, 99
+  call printf  
+
+  // Restore context
+  mov rsp, rbp
+  pop rbp
+  ret
+
+
 
 
 
