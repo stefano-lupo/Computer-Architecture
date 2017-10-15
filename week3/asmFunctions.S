@@ -24,7 +24,7 @@ fmt:
 /****************************************************
   Note: USING UNIX CALLING CONVENTION
   Param 1 - 6 stored in rdi, rsi, rdx, rcx, r8, r9
-  ebp, rbx, r12, r13, r14, r15 are NON volatile
+  rbp, rbx, r12, r13, r14, r15 are NON volatile
   return through rax (accumulator)
 *****************************************************/
 
@@ -32,7 +32,7 @@ fmt:
   Note: USING WINDOWS CALLING CONVENTION
   Caller must allocate 32 bytes of shadow space (before pushing any extra params) 
   Param 1 - 4 stored in rcx, rdx, r8, r9
-  ebp, rbx, r12, r13, r14, r15 are NON volatile
+  rbp, rbx, r12, r13, r14, r15 are NON volatile
   return through rax (accumulator)
 *****************************************************/
 
@@ -58,7 +58,7 @@ b_greatereq_v:
   mov rax, r8               // v = c
 
 c_greatereq_v:  
-              
+
   // Restore context
   mov rsp, rbp
   pop rbp
@@ -145,22 +145,28 @@ gcd_return:
 
 
 /*
-  Print
+  Prints the sum of 5 passed parameters
+  print(int a (rcx), int b (rdx), int c (r8), int d (r9), int e (on stack + 6))
 */
 q:
   // Save context
-  push ebp                  // Save old frame pointer
-  mov ebp, esp              // Set our new frame pointer
+  push rbp                  // Save old frame pointer
+  mov rbp, rsp              // Set our new frame pointer
 
+  mov r10, [rbp+48]         // r10 = e
+  xor rax, rax              // rax = 0
 
-  mov edi, fmt
-  mov esi, 99
-  mov eax, 0
-  call printf
+  add rax, rcx
+  add rax, rdx
+  add rax, r8
+  add rax, r9
+  add rax, r10
+
+  
 
   // Restore context
-  mov esp, ebp
-  pop ebp
+  mov rsp, rbp
+  pop rbp
   ret
 
 

@@ -40,6 +40,6 @@ int main() {
     }   
 
     printf("100 tests were successfull\n\n");   
-    printf("%c\n",q());
+    printf("%" PRId64 "\n",q(1,2,3,4,5));
     return 0;
 }
