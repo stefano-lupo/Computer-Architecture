@@ -13,7 +13,13 @@
 // Define globals
 .DATA
 g: .quad 4  
-fmt:  .string "%ld\n"        
+
+fmt:
+	.string	"%d\n"
+	.text
+	.globl	q
+	.type	q, @function
+
 
 /****************************************************
   Note: USING UNIX CALLING CONVENTION
@@ -51,7 +57,8 @@ b_greatereq_v:
   jge c_greatereq_v
   mov rax, r8               // v = c
 
-c_greatereq_v:                
+c_greatereq_v:  
+              
   // Restore context
   mov rsp, rbp
   pop rbp
@@ -99,14 +106,14 @@ p_restore:
   int gcd(int a (rcx), int b (rdx))
  */
 
-  gcd: 
+gcd: 
   // Save context
   push rbp                  // Save old frame pointer
   mov rbp, rsp              // Set our new frame pointer
 
   // Check if b is zero
   test rdx, rdx             // rdx && rdx (zero iff rdx was 0)
-  je zero
+  je gcd_zero
 
 
   /*
@@ -122,15 +129,15 @@ p_restore:
   idiv r10                  // rax = (rdx|rax) / r10, rdx = (rdx|rax) % r10
   mov rcx, r10              // rcx = b, rdx = a % b
 
-  // recurse gcd(b, a%b) - No need for shadow space as function doesnt make use of it
+  // recurse gcd(b, a%b) - No need for shadow space as function doesnt make use of it or call any other functions that do
   call gcd
-  jmp return
+  jmp gcd_return
 
 
-zero:
+gcd_zero:
   mov rax, rcx              // return a
 
-return: 
+gcd_return: 
   // Restore context
   mov rsp, rbp
   pop rbp
@@ -142,20 +149,18 @@ return:
 */
 q:
   // Save context
-  push rbp                  // Save old frame pointer
-  mov rbp, rsp              // Set our new frame pointer
+  push ebp                  // Save old frame pointer
+  mov ebp, esp              // Set our new frame pointer
 
 
-  mov rdi, fmt
-  mov rsi, 10
-  mov rax, 0
+  mov edi, fmt
+  mov esi, 99
+  mov eax, 0
   call printf
 
-  mov rax, fmt
-
   // Restore context
-  mov rsp, rbp
-  pop rbp
+  mov esp, ebp
+  pop ebp
   ret
 
 
