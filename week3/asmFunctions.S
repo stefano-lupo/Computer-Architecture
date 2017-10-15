@@ -1,30 +1,34 @@
-#include "asmConstants.h"
-
 .intel_syntax noprefix
 .section .text
 
 // Export the following
-.globl min, p, gcd, myTest
+.globl min, p, gcd, q
 
 // Define types of the following
 .type min, @function
 .type p, @function
 .type gcd, @function
-.type myTest, @function
+.type q, @function
 
 // Define globals
 .DATA
-g: .quad 4
+g: .quad 4  
+fmt:  .string "%ld\n"        
 
-/*
-  Note Param 1 - 4 stored in rcx, rdx, r8, r9 respectively
-  rax, rcx, rdx, r8, r9, r10, r11 are volatile
+/****************************************************
+  Note: USING UNIX CALLING CONVENTION
+  Param 1 - 6 stored in rdi, rsi, rdx, rcx, r8, r9
+  ebp, rbx, r12, r13, r14, r15 are NON volatile
   return through rax (accumulator)
-*/
+*****************************************************/
 
-myTest:
-  mov rax, rcx
-  ret
+/****************************************************
+  Note: USING WINDOWS CALLING CONVENTION
+  Caller must allocate 32 bytes of shadow space (before pushing any extra params) 
+  Param 1 - 4 stored in rcx, rdx, r8, r9
+  ebp, rbx, r12, r13, r14, r15 are NON volatile
+  return through rax (accumulator)
+*****************************************************/
 
 /*
   Min - Returns minimum of three parameters passed in
@@ -35,9 +39,7 @@ min:
   push rbp                  // Save caller's frame pointer
   mov rbp, rsp              // Set the frame pointer to the current value of the stack pointer (which just pushed)
 
-  mov rsi, rax              // rax = v = a
-
-  jmp return
+  mov rax, rcx              // rax = v = a
   
   cmp rdx, rax              // cmp(b,v)
   jge b_greatereq_v
@@ -50,8 +52,6 @@ b_greatereq_v:
   mov rax, r8               // v = c
 
 c_greatereq_v:                
-
-return:
   // Restore context
   mov rsp, rbp
   pop rbp
@@ -60,87 +60,103 @@ return:
 
 
 
-
 /*
   p - returns the minimum of the 4 passed parameters and global variable g
-  int p(int i (rax), int j (rcx), int k (rdx), int l [ebp+20])
-/*
+  int p(int i (rcx), int j (rdx), int k (r8), int l (r9))
+*/
 
 p: 
   // Save context
-  push ebp                  // Save old frame pointer
-  mov ebp, esp              // Set our new frame pointer
-  sub esp, 4                // Allocate space for local variables
-  // NA                     // Save non volatile registers (ebx)
+  push rbp                  // Save old frame pointer
+  mov rbp, rsp              // Set our new frame pointer
 
-  // v = min(g, i, j)
-  push [ebp+12]             // push j
-  push [ebp+8]              // push i         
-  push g                    // push g
-  call min
-  mov [ebp-4], eax          // save result of function call in v
-  add esp, 12               // pop the 3 pushed parameters off the stack
+  push r8                   // save k
+  push r9                   // save l
+  mov r8, g
 
-  // return min(v, k, l)
-  push [ebp+20]             // push l
-  push [ebp+16]             // push k
-  push [ebp-4]              // push v
-  call min                  // eax = min(v, k, l) 
+                            // i = rcx, j = rdx, rdx = r8
+  sub rsp, 32               // Allocate 32 bytes (although it is unused for our function) of shadow space (4x64 bit words)
+  call min                  // rax = min(g, i, j)
+  add rsp, 32               // Deallocate the 32 bytes of shaodwspace
 
+  mov rcx, rax              // rcx = rax = min(i,j,g)
+  pop rdx                   // rdx = k
+  pop r8                    // r8 = l
+
+  sub rsp, 32               // Allocate 32 bytes of shadow space (4x64 bit words)
+  call min                  // min(min(i,j,g), k, l)
+  add rsp, 32               // Deallocate the 32 bytes of shaodwspace
+                
+p_restore:
   // Restore context
-  mov esp, ebp
-  pop ebp
-  ret 0
+  mov rsp, rbp
+  pop rbp
+  ret
 
 
 /*
   gcd - Returns the greatest common divisor of two parameters
-  int gcd(int a [ebp+8], int b[ebp+12])
- 
+  int gcd(int a (rcx), int b (rdx))
+ */
 
   gcd: 
   // Save context
-  push ebp                  // Save old frame pointer
-  mov ebp, esp              // Set our new frame pointer
-  // NA                     // Allocate space for local variables
-  // NA                     // Save non volatile registers (ebx)
+  push rbp                  // Save old frame pointer
+  mov rbp, rsp              // Set our new frame pointer
 
   // Check if b is zero
-  mov eax, [ebp+12]         // eax = b
-  test eax, eax             // eax && eax (zero iff eax was 0)
+  test rdx, rdx             // rdx && rdx (zero iff rdx was 0)
   je zero
 
 
   /*
-    div divides the 64 bits across EDX|EAX by the operand
-    div stores the result of the division in EAX and the remainder in EDX
- 
+    idiv divides the 128 bits across RDX|RAX by the operand
+    idiv stores the result of the division in RAX and the remainder in RDX
+ */
 
-  // Set up operands, compute a % b
-  xor edx, edx              // Clear upper 32 bits
-  mov eax, [ebp+8]          // eax = a (numerator)
-  mov ecx, [ebp+12]         // ecx = b (denominator)
-  div ecx                   // eax = (edx|eax / ecx, edx = (edx|eax) % ecx
+  mov r10, rdx              // save b in r10
 
-  // push parameters
-  push edx                  // push a % b
-  mov eax, [ebp+12]         // eax = b
-  push eax                  // push b
+  mov rax, rcx              // prepare rax for sign extension
+  cqo                       // sign extends rax into 128 bits accross rdx:rax
 
-  // recurse
+  idiv r10                  // rax = (rdx|rax) / r10, rdx = (rdx|rax) % r10
+  mov rcx, r10              // rcx = b, rdx = a % b
+
+  // recurse gcd(b, a%b) - No need for shadow space as function doesnt make use of it
   call gcd
-
-  // pop two pushed parameters
-  sub esp, 8
   jmp return
- 
+
+
 zero:
-  mov eax, [ebp+8]          // return a
+  mov rax, rcx              // return a
 
 return: 
   // Restore context
-  mov esp, ebp
-  pop ebp
-  ret 0
+  mov rsp, rbp
+  pop rbp
+  ret
 
+
+/*
+  Print
 */
+q:
+  // Save context
+  push rbp                  // Save old frame pointer
+  mov rbp, rsp              // Set our new frame pointer
+
+
+  mov rdi, fmt
+  mov rsi, 10
+  mov rax, 0
+  call printf
+
+  mov rax, fmt
+
+  // Restore context
+  mov rsp, rbp
+  pop rbp
+  ret
+
+
+
