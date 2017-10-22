@@ -16,7 +16,7 @@ int main() {
     // Set seed for random numbers
     srand(time(NULL));
 
-    int64_t a = 100, b = 50, c = -3, d = -15;
+    int64_t a = 100, b = 50, c = -3, d = -15, e = 15;
     printf("Min: The minimum of %" PRId64 ", %" PRId64 ", %" PRId64 " is %" PRId64 "\n", a, b, c, min(a,b,c));
     printf("P: The minimum of %" PRId64 ", %" PRId64 ", %" PRId64 ", %" PRId64 " and g (4) is %" PRId64" \n", a, b, c, d, p(a,b,c,d));
 
@@ -35,10 +35,11 @@ int main() {
             exit(0);
         }
     }   
-    printf("100 tests were successfull\n\n");   
+    printf("100 tests were successfull\n");   
     
-    // q();
-    // shadowSpace();
+    int64_t sum = q(a, b, c, d, e);
+    printf("a = %" PRId64 ", b = %" PRId64 ", c = %" PRId64 ", d = %" PRId64 ", e = %" PRId64 ", sum = %" PRId64 "\n", a, b, c, d, e, sum);
+    shadowSpace();
 
     return 0;
 }

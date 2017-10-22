@@ -6,7 +6,8 @@
 .DATA
 g: .quad 4  
 
-format: .ascii	"%s\0"
+format: .string	"a = %I64d b = %I64d c = %I64d d = %I64d e = %I64d sum = %I64d\n"
+format2: .string "a = %I64d\n"
 
 
 // Export the following
@@ -153,7 +154,9 @@ q:
   push rbp                  // Save old frame pointer
   mov rbp, rsp              // Set our new frame pointer
 
+
   mov r10, [rbp+48]         // r10 = e
+  mov r11, r9              // r11 = d
   xor rax, rax              // rax = 0
 
   add rax, rcx
@@ -163,14 +166,27 @@ q:
   add rax, r10
   push rax                  // save sum to stack before calling printf
 
-  sub rsp, 32               // Allocate shadow space for printf
+  
 
-  lea rcx, format
-  mov rdx, 99
-  call printf
+  /*
+    Unfortunatley printf will not working with my setup - please see note below
+    However this is the code to accomplish it on a windows machine
+    This code correctly returns the sum however.
+  */
 
-  add rsp, 32               // deallocate shadow space
-  pop rax                   // retrieve sum
+  mov r9, r8              // pass c (last param register)
+  mov r8, rdx             // pass b
+  mov rdx, rcx            // pass a
+  lea rcx, format         // pass format string
+  push rax                // pass sum through stack
+  push r11                // pass d through stack
+  sub rsp, 32             // Allocate shadow space for printf
+
+  //call printf           // Fails due to notes specified
+
+  add rsp, 32             // deallocate shadow space
+  add rsp, 8              // deallocate extra 2 pushed params
+  pop rax                 // retrieve sum
 
 
   // Restore context
@@ -180,16 +196,22 @@ q:
 
 
 /*
-  This function shows that printf will not function correctly unless shadown space allocated
+  This function would show that printf will not function correctly unless shadown space allocated
+  Note as I was using linux which comes with a precompiled version of printf under the linux calling convention,
+  this func does not work correctly.
+  I could use Microsoft conventions / syntax in Linux by specifying some directives but couldnt get printf to work.
+  However if this code was run with a Microsoft version of printf,
+  corruption would occur due to no shadow space being allocated
 */
 shadowSpace:
   // Save context
   push rbp                  // Save old frame pointer
   mov rbp, rsp              // Set our new frame pointer
 
-  lea rcx, format
+  // Not allocating shadow space - should cause bug
+  lea rcx, format2
   mov rdx, 99
-  call printf  
+  //call printf  
 
   // Restore context
   mov rsp, rbp
