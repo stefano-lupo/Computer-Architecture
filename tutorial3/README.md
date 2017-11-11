@@ -288,3 +288,6 @@ In order to find how long it took to calculate `ackermann(3,6)` on my machine, I
   printf("Mean CPU time to compute ackermann(3,6) was %f\n\n", meanTime);
 ```
 This resulted in a mean CPU Time of 0.002611 seconds. This time represents the mean **actual** time taken to run the function on my CPU if there was no multitasking. This is different to wall clock time which would depend drastically on what *else* the processor was doing when the function was ran. Due to the ackermann function being quite complex to compute (and thus resulting in a long execution time), timing using `clock_t` structs was sufficiently accurate.
+
+The console output is shown below.   
+![console output](console3.png)
