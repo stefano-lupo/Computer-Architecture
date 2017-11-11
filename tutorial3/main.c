@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
 
 int numWindows;
 int windowsUsed;
@@ -60,6 +62,16 @@ void resetVars(int _numWindows) {
   
 }
 
+int ackermannBare(int x, int y) {
+  if(x==0) {
+    return y+1;
+  } else if(y==0) { 
+    return ackermann(x-1, 1);
+  } else {
+    return ackermann(x-1, ackermann(x, y-1));
+  }
+}
+
 int main() {
   resetVars(6);
   int ans = ackermann(3,6);
@@ -84,6 +96,19 @@ int main() {
   printf("Number of overflows: %d, maxRegWindowDepth (#registers): %d\n", numOverflows, maxNumOverflows*16);
   printf("Number of underflows: %d\n", numUnderflows);
   printf("Max number of overflows: %d\n\n", maxNumOverflows);
+
+  double meanTime = 0;
+  for(int i=0;i<10; i++) {
+    clock_t begin = clock();
+    int answer = ackermannBare(3,6);
+    clock_t end = clock();
+    double timeSpent = (double)(end-begin)/CLOCKS_PER_SEC;
+    meanTime += timeSpent;
+    printf("CPU Time: %f sec\n\n", timeSpent);
+  }
+  meanTime /= 10;
+  printf("Mean CPU time to compute ackermann(3,6) was %f\n\n", meanTime);
+  
 
   return 0;
 }

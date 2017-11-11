@@ -162,3 +162,124 @@ recurse:
     ret r25, 0                  ; return gcd(b, a%b)
     xor r0, r0, r0              ; no op
 ```
+
+    
+# Q2 Ackermann Function on a RISC-1 Machine
+In order to simulate the running of `ackermann(3, 6)` on a RISC-1 machine, the following C code was used.
+
+```c
+#include <stdio.h>
+
+int numWindows;
+int windowsUsed;
+int numOverflows;
+int numUnderflows;
+int numCalls;
+
+int currentNumOverflows;
+int maxNumOverflows;
+
+void overFlow() {
+  if(windowsUsed == numWindows) {
+    numOverflows ++;
+    currentNumOverflows++;
+    if(currentNumOverflows > maxNumOverflows) {
+      maxNumOverflows = currentNumOverflows;
+    }
+  } else {
+    windowsUsed ++;
+  }
+}
+
+void underFlow() {
+    if(windowsUsed == 2) {
+      numUnderflows ++;
+      currentNumOverflows --;
+    } else {
+      windowsUsed --;
+    }
+}
+
+
+int ackermann(int x, int y) {
+  numCalls ++;
+  overFlow();
+
+  if(x==0) {
+    underFlow();
+    return y+1;
+  } else if(y==0) { 
+    int val = ackermann(x-1, 1);
+    underFlow();
+    return val;
+  } else {
+    int val = ackermann(x-1, ackermann(x, y-1));
+    underFlow();
+    return val;
+  }
+}
+
+void resetVars(int _numWindows) {
+  numWindows = _numWindows;
+  windowsUsed = 0;
+  numOverflows = 0;
+  numUnderflows = 0;
+  numCalls = 0;
+  maxNumOverflows = 0;
+  currentNumOverflows = 0;
+  
+}
+
+int main() {
+  resetVars(6);
+  int ans = ackermann(3,6);
+  printf("6 Windows\n");
+  printf("Ack(3,6) = %d, num calls %d.\n", ans, numCalls);
+  printf("Number of overflows: %d, maxRegWindowDepth (#registers): %d\n", numOverflows, maxNumOverflows*16);
+  printf("Number of underflows: %d\n", numUnderflows);
+  printf("Max number of overflows: %d\n\n", maxNumOverflows);
+
+  resetVars(8);
+  ans = ackermann(3,6);
+  printf("8 Windows\n");
+  printf("Ack(3,6) = %d, num calls %d.\n", ans, numCalls);
+  printf("Number of overflows: %d, maxRegWindowDepth (#registers): %d\n", numOverflows, maxNumOverflows*16);
+  printf("Number of underflows: %d\n", numUnderflows);
+  printf("Max number of overflows: %d\n\n", maxNumOverflows);
+
+  resetVars(16);
+  ans = ackermann(3,6);
+  printf("16 Windows\n");
+  printf("Ack(3,6) = %d, num calls %d.\n", ans, numCalls);
+  printf("Number of overflows: %d, maxRegWindowDepth (#registers): %d\n", numOverflows, maxNumOverflows*16);
+  printf("Number of underflows: %d\n", numUnderflows);
+  printf("Max number of overflows: %d\n\n", maxNumOverflows);
+
+  return 0;
+}
+```
+This resulted in the following:   
+**Resulting value (constant)**: 509     
+**Number of function calls (constant)**: 172233
+
+| Metric                        | 6 Windows | 8 Windows | 16 Windows    |
+| ----------------------------- | --------- | --------- | ------------- |
+| Overflows                     | 84883     | 83909     | 80140         |
+| Underflows                    | 84885     | 83911     | 80142         |
+| Max Window Depth (#Registers) | 505       | 503       | 495           | 
+
+The console output is shown below:   
+![Console output](console3.png)
+
+# Q3 Time taken for ackermann(3,6)
+In order to find how long it took to calculate `ackermann(3,6)` on my machine, I re-wrote the ackermann function (called ackermannBare) without any of the underflow / overflow calculations. The following code could then be used.
+
+```c
+  clock_t begin = clock();
+  int answer = ackermannBare(3,6);
+  clock_t end = clock();
+  double timeSpent = (double)(end-begin)/CLOCKS_PER_SEC;
+  printf("ackermann(3,6) = %d\n", answer);
+  printf("CPU Time: %f sec\n\n", timeSpent);
+```
+This resulted in a total CPU Time of 0.003066 seconds. This time represents the actual time taken to run the function on my CPU if there was no multitasking. This is different to wall clock time which would depend drastically on what *else* the processor was doing when the function was ran.
