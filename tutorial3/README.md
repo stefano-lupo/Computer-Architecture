@@ -275,11 +275,16 @@ The console output is shown below:
 In order to find how long it took to calculate `ackermann(3,6)` on my machine, I re-wrote the ackermann function (called ackermannBare) without any of the underflow / overflow calculations. The following code could then be used.
 
 ```c
-  clock_t begin = clock();
-  int answer = ackermannBare(3,6);
-  clock_t end = clock();
-  double timeSpent = (double)(end-begin)/CLOCKS_PER_SEC;
-  printf("ackermann(3,6) = %d\n", answer);
-  printf("CPU Time: %f sec\n\n", timeSpent);
+ double meanTime = 0;
+ for(int i=0;i<10; i++) {
+    clock_t begin = clock();
+    int answer = ackermannBare(3,6);
+    clock_t end = clock();
+    double timeSpent = (double)(end-begin)/CLOCKS_PER_SEC;
+    meanTime += timeSpent;
+    printf("CPU Time: %f sec\n\n", timeSpent);
+  }
+  meanTime /= 10;
+  printf("Mean CPU time to compute ackermann(3,6) was %f\n\n", meanTime);
 ```
-This resulted in a total CPU Time of 0.003066 seconds. This time represents the actual time taken to run the function on my CPU if there was no multitasking. This is different to wall clock time which would depend drastically on what *else* the processor was doing when the function was ran.
+This resulted in a mean CPU Time of 0.002611 seconds. This time represents the mean **actual** time taken to run the function on my CPU if there was no multitasking. This is different to wall clock time which would depend drastically on what *else* the processor was doing when the function was ran. Due to the ackermann function being quite complex to compute (and thus resulting in a long execution time), timing using `clock_t` structs was sufficiently accurate.
