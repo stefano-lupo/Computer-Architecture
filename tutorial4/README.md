@@ -140,3 +140,78 @@ Now that we have no mechanism of detecting data hazards, the computed answer wil
 As expected, the simulation shows that it will take a total of 9 clock cycles to execute the 5 instructions and the resulting answer will 6 instead of the correct 21 due to the data hazards.
 
 ![Q2 no forwarding or interlock](screenshots/q2c-simulation.png)
+
+
+
+# Q3
+## Number of instructions and clock cycles
+After running the program we see that the total number of instructions executed was 22 and the total number of clock cycles was 28.
+
+### Pipelining
+The first reason for the discrepancy between the number of instructions and clock cycles is due to the fact that the pipeline was empty at the begining of program execution. Thus the CPU is not operating at maximum efficiency (1 instruction being completed per tick) until the pipe line is filled.   
+The forumla for the number of cycles to execute n instructions for a given pipeline size that starts off empty is:
+> #cycles = n + (pipelineSize - 1)
+
+Thus for our pipeline size of 5:
+
+> #cycles = 22 + (5 - 1) = 26
+
+Thus we expect the program to take an extra four cycles due to the pipeline starting off empty.
+
+### Stalls
+However there is still an extra 2 unexplained cycles. The reason for these extra 2 cycles is due to pipeline stalls.    
+The first time a stall is encountered is upon reaching the `J E0` instruction for the first time. As this is an unconditonal branch, this branch will always be taken and thus on the first time it is reached, it creates a pipeline stall. This is due to the fact that when the jump instruction is being decoded, the memory address of the next PC (the one to jump to) is being calculated. Thus this produces a stall of 1 clock cycle.
+    
+
+However once this happens, the Branch Target Buffer caches this result and thus any subsequent times we reach the `J E0` instruction (PC = 24), we can fetch the cached resulting PC from the BTB, avoiding any further stalls.
+
+Finally, the `BEQZ -, R2, 24` instruction (PC = 04) will finally be taken once R2 reaches zero to allow the program to break out of the loop. This will again cause a stall for the same reason as the above, accounting for our final missing clock cycle.
+
+    
+## No Branch Prediction
+If we consider the important components (from a clock cycles point of view) of the program execution for the given case of `r2 = 3 = 0011` and `r3 = 4 = 0100` we find the following:
+```
+  ; Start Execution
+  BEQZ r2, 24         ; r2 = 0011 != 0 so No branch taken
+  SRLi r2, r2, 1      ; r2 = 0001
+  J E0                ; Stall 1
+
+  ; After first iteration
+  BEQZ r2, 24         ; r2 = 0001 != 0 so No branch taken
+  SRLi r2, r2, 1      ; r2 = 0000
+  J E0                ; Stall 2
+
+  ; After second iteration
+  BEQZ r2, 24         ; r2 = 0000 == 0 so branch taken -> Stall 3
+
+```
+
+Thus we see that we expect a total of 3 pipeline stalls due to to the branches. However 2 of these branches are for the same PC and thus when we used branch prediciton, the BTB allowed us to avoid the second stall due to `J E0`.
+
+    
+However with branch prediciton replaced by interlocking, this no longer happens and thus we expect to have a stall for the second `J EO` as well as the first. Thus we expect that we will have 1 more stall when no branch prediction is used than when it is (for this specific program). That is we expect 29 clock cycles instead of the 28 clock cyles that were noted when branch prediction was used.
+
+
+Upon running the simulation with *branch interlock* enabled instead of *branch prediction* we see the program required 29 clock cycles as expected.
+
+
+
+## Swapping Shift Orders
+Swapping the order of the shift operations results in creating an extra stall for every iteration of the loop. This is due to the fact that it creates a load hazard. The culprit here is the following:
+
+```Assembly
+  LD    r2, r0, 0       ; r2 = [r0]
+  SRLi  r2, r2, 1       ; r2 = r2 * 2
+```
+
+The hazard here is due to the fact that during the execution phase of `LD r2, r0, 0` the ALU calculates the memory address that is to be read from. Once this is completed, the instruction moves into the memory access phase where it can read this value from memory into **r2**.
+
+
+However, when once the load instruction moves into the memory access phase, it is immediately followed by the shift instruction `SRLi r2, r2, 1` entering the execution phase. Thus the execution of the shift instruction relies on the value being currently read in from memory by the load instruction creating a stall. 
+
+
+Thus as these load and shift instructions are performed once per iteration of the loop, they produce one stall per iteration of the loop. As shown, the loop iterates twice for the given setup and thus two extra stalls are produced as a result.
+
+
+
+Examining the simulation showed a total of 30 clock cycles required when using branch prediction and 31 clock cycles when not using branch prediciton - a difference of two cycles for both methods as expected as branch prediciton has no impact on load hazards. 
