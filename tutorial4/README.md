@@ -9,7 +9,7 @@ Module: CS3421 Computer Architecture II
 ### O1 to MUX6
 - This datapath would be used when there is a memory access hazard (an instruction uses a register whos value is currently being loaded in from memory)
 ```assembly
-  LD    r3, r1, x        ; Load into r3, from the address contained in r1, offset by x
+  LD    r3, r1, x       ; Load into r3, from the address contained in r1, offset by x
   ADD   r1, r3, r2      ; r1 = r3 + r2
 ```
 ![Q1a](screenshots/Q1_O1-mux6.png)
@@ -18,7 +18,7 @@ Module: CS3421 Computer Architecture II
 - The **O1 -> MUX6** datapath is used due to memory access hazards as before.
 - The **O0 -> MUX7** datapath is used to due a data hazard
 ```assembly
-  LD    r3, r1, x        ; Load from memory
+  LD    r3, r1, x       ; Load from memory
   ADD   r1, r2, r2      ; r1 = r2 + r2
   ADD   r2, r3, r1      ; r2 = r3 + r1 - this requires both of the source registers from the previous two instructions
 ```
@@ -47,7 +47,7 @@ Module: CS3421 Computer Architecture II
 ### Data Cache to MUX 9
 - This datapath is used during the memory access stage of loading data from memory.
 ```assembly
-  LD    r0, r0, r0         ; Load data from memory
+  LD    r0, r0, r0      ; Load data from memory
 ```
 ![Q1d](screenshots/Q1_DC-mux9.png)
 
@@ -56,8 +56,8 @@ Module: CS3421 Computer Architecture II
 - The result of the compare operation determines whether or not the branch should be taken.
 - This is done by detecting if the result was zero and using that to control mux3 (which controls whether or not the branch should be taken).
 ```assembly
-  AND     R0, R0, R0        ; Some operation to act as a comparison (equivalent to setting condition code flags)
-  BEQZ    _, R0, x          ; Branch if the result of the previous operation was 0
+  AND     R0, R0, R0      ; Some operation to act as a comparison (equivalent to setting condition code flags)
+  BEQZ    _, R0, x        ; Branch if the result of the previous operation was 0
 ```
 ![Q1e](screenshots/Q1_O0-ZD.png)
 
@@ -77,10 +77,10 @@ Module: CS3421 Computer Architecture II
 - The screenshot below shows the loop after a few iterations and thus the next PC is contained in the BTB.
 
 ```assembly
-  ADD     r1, r1, r1        ; Dummy loop body
-  ADD     r2, r2, r2        ; Dummy loop body
-  ADD     r3, r3, r3        ; Dummy loop body
-  J       0xF4              ; Jump back to start of the loop
+  ADD     r1, r1, r1      ; Dummy loop body
+  ADD     r2, r2, r2      ; Dummy loop body
+  ADD     r3, r3, r3      ; Dummy loop body
+  J       0xF4            ; Jump back to start of the loop
 
 ```
 ![Q1g](screenshots/Q1_BTB-mux1.png)
