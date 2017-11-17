@@ -100,9 +100,10 @@ r1 = r1 + r2 = 8 + 13 = 21
 Therefore the resulting value of r1 should be 21.
 
 ## ALU Forwarding Enabled
-Assuming pipeline is initally empty, the instructions will execute as follows:
+Assuming pipeline is initally empty, the instructions will execute as follows:   
+
 | Instruction   |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |
-| ------------- |  -  |  -  |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| ------------- |-----|-----|-----|-----|-----|-----|-----|-----|-----|
 | I1            |  F  |  D  |  E  |  M  |  W  |     |     |     |     |
 | I2            |     |  F  |  D  |  E  |  M  |  W  |     |     |     |   
 | I3            |     |     |  F  |  D  |  E  |  M  |  W  |     |     | 
