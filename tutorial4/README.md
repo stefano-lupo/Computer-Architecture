@@ -56,17 +56,18 @@ Module: CS3421 Computer Architecture II
 - The result of the compare operation determines whether or not the branch should be taken.
 - This is done by detecting if the result was zero and using that to control mux3 (which controls whether or not the branch should be taken).
 ```assembly
-  AND     R0, R0, R0      ; Some operation to act as a comparison (equivalent to setting condition code flags)
-  BEQZ    _, R0, x        ; Branch if the result of the previous operation was 0
+  AND     r0, r0, r0      ; Some operation to act as a comparison (equivalent to setting condition code flags)
+  BEQZ    _, r0, x        ; Branch if the result of the previous operation was 0
 ```
 ![Q1e](screenshots/Q1_O0-ZD.png)
 
 ### Register File to MUX1
-
+- This datapath is used when branching to a memory address contained in a register.
+- However (as discussed with Dr Jones after a lecture), due to an issue with the simulation, the datapath does not illuminate in this case and thus no image could be taken.
+- The following code snippet would result in the datapath being used however.
 ```assembly
-
+  jr    r0                ; Jump to memory address contained in r0
 ```
-![Q1f](screenshots/Q1_RF-mux1.png)
 
 ### Branch Target Buffer to MUX1
 - This datapath will be used when a PC that contains a branch instruction is reached AND that PC has been seen before.
@@ -113,7 +114,7 @@ Assuming pipeline is initally empty, the instructions will execute as follows:
 Thus it will require a total of 9 clock cycles and will produce the correct answer of 21 due to ALU forwarding.
 
 ## ALU Forwarding Disabled, CPU data Dependency Interlocks Enabled
-Since ALU forwarding is now disable, we need a mechanism to handle data hazards (since our program is full of them - one on every instruction in fact). CPU Data Dependency Interlocks can fulfill this role. These work by stalling the pipeline until the data dependency is resolved whenever a data dependency is discovered. That is, the execution phase of the following instruction is stalled by two cycles until the write back phase of the current instruction is completed.
+Since ALU forwarding is now disabled, we need a mechanism to handle data hazards (since our program is full of them - one on every instruction in fact). CPU Data Dependency Interlocks can fulfill this role. These work by stalling the pipeline until the data dependency is resolved whenever a data dependency is discovered. That is, the execution phase of the following instruction is stalled by two cycles until the write back phase of the current instruction is completed.
 
 The stalls occur for two reasons:
 1. The next process cannot progress to the next phase of the pipeline until the previous process is progressing to the phase after that.
@@ -130,12 +131,12 @@ The pipeline with stalls is shown below.
 Thus the total number of clock cycles required is **17**.    
 *Note this does not include the clock cycles for the HALT instruction and instead shows the more interesting number of clock cycles to compute the answer.* 
 
-Running the simulation gave the same total of 17 clock ticks to execute the 5 instructions and produced a result of 0x15 which is 21 as expected.
+Running the simulation showed the program required 17 clock ticks to execute the 5 instructions and produced a result of 0x15 which is 21 as expected.
 ![Q2 no forwarding simulation](screenshots/q2b-simulation.png)
 
 
 ## ALU Forwarding Disabled and Data Dependency Interlocks Disabled
-Now that we have no mechanism of detecting data hazards, the computed answer will be incorrect due to non updated values of R1 and R2 being used between subsequent instructions. However there will be no stalls in this pipeline and thus we expect the same number of clock cycles as the case when ALU forwarding was enabled (causing no stalls).
+Now that we have no mechanism for handling data hazards, the computed answer will be incorrect due to non updated values of R1 and R2 being used between subsequent instructions. However there will be no stalls in this pipeline and thus we expect the same number of clock cycles as the case when ALU forwarding was enabled (causing no stalls).
 
 As expected, the simulation shows that it will take a total of 9 clock cycles to execute the 5 instructions and the resulting answer will 6 instead of the correct 21 due to the data hazards.
 
@@ -159,7 +160,7 @@ Thus for our pipeline size of 5:
 Thus we expect the program to take an extra four cycles due to the pipeline starting off empty.
 
 ### Stalls
-However there is still an extra 2 unexplained cycles. The reason for these extra 2 cycles is due to pipeline stalls.    
+However there is still an extra 2 unexplained cycles. The reason for these extra 2 cycles is pipeline stalls.    
 The first time a stall is encountered is upon reaching the `J E0` instruction for the first time. As this is an unconditonal branch, this branch will always be taken and thus on the first time it is reached, it creates a pipeline stall. This is due to the fact that when the jump instruction is being decoded, the memory address of the next PC (the one to jump to) is being calculated. Thus this produces a stall of 1 clock cycle.
     
 
@@ -207,7 +208,7 @@ Swapping the order of the shift operations results in creating an extra stall fo
 The hazard here is due to the fact that during the execution phase of `LD r2, r0, 0` the ALU calculates the memory address that is to be read from. Once this is completed, the instruction moves into the memory access phase where it can read this value from memory into **r2**.
 
 
-However, when once the load instruction moves into the memory access phase, it is immediately followed by the shift instruction `SRLi r2, r2, 1` entering the execution phase. Thus the execution of the shift instruction relies on the value being currently read in from memory by the load instruction creating a stall. 
+However, when the load instruction moves into the memory access phase, it is immediately followed by the shift instruction `SRLi r2, r2, 1` entering the execution phase. Thus the execution of the shift instruction relies on the value being currently read in from memory by the load instruction, creating a stall. 
 
 
 Thus as these load and shift instructions are performed once per iteration of the loop, they produce one stall per iteration of the loop. As shown, the loop iterates twice for the given setup and thus two extra stalls are produced as a result.
