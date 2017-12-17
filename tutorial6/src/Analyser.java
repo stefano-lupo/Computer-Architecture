@@ -105,9 +105,6 @@ class Analyser {
             // Increment number of these cycles that have occurred
             types[cycleType]++;
 
-            // TODO: delete this (just for debug)
-//            burstCount = 0;
-
 
             // Feed the address to the appropriate cache
             // 4: instruction read, 6: data read, 7: data write
