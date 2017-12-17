@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class Runner {
 
     private final static String FILE_NAME = "gcc1.trace";
-    private final static String OUTPUT_FILE_NAME = "tv.txt";;
+    private final static String OUTPUT_FILE_NAME = "subtrace.txt";
 
 
     public static void main(String... aArgs) throws IOException, IllegalArgumentException{
@@ -23,9 +23,11 @@ public class Runner {
         // Read the file
         byte[] bytes = readSmallBinaryFile(FILE_NAME);
 
+        System.out.println("Total Bytes: " + bytes.length);
+
         // Create an int array from bytes
         int[] littleEndian = getAsIntArray(bytes, false);
-//      System.out.println("Number of traces 32bit: " + littleEndian.length+ "\n");
+        System.out.println("Number of 32bit ints: " + littleEndian.length + ", number of traces = " + littleEndian.length / 2 + "\n");
 
         // See how long it takes to read the file
         final long timeAfterRead = System.currentTimeMillis();
@@ -113,6 +115,4 @@ public class Runner {
         byte[] snippet = Arrays.copyOfRange(aBytes, 0 , 800);
         Files.write(path, snippet); //creates, overwrites
     }
-
-
 }  

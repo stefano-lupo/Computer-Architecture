@@ -1,8 +1,10 @@
+import java.util.Arrays;
+
 class Analyser {
 
     private final static boolean DEBUG = false;
 
-    private final static int ADDRESS_MASK = 0x01FFFFFC;
+    private final static int ADDRESS_MASK = 0x007FFFFF;
     private final static int CYCLE_MASK = 0xE0000000;
     private final static int BURST_MASK = 0x18000000;
 
@@ -21,6 +23,7 @@ class Analyser {
         this.iCache = iCache;
         this.dCache = dCache;
         this.traces = traces;
+        System.out.println("Traces Length: " + this.traces.length);
     }
 
     void analyse() throws IllegalArgumentException {
@@ -32,7 +35,10 @@ class Analyser {
         int[] types = new int[8];
 
 
-        int tracesToAnalyse = DEBUG ?  2 * 80 : traces.length;
+        int tracesToAnalyse = DEBUG ?  2 * 1 : traces.length;
+
+        System.out.println("Analysing traces: " + tracesToAnalyse / 2);
+
         float actualNumTraces = tracesToAnalyse / 2;
 
         for(int i=0;i<tracesToAnalyse; i+=2) {
@@ -50,7 +56,13 @@ class Analyser {
 
             //TODO: Burst Count + 1 in his code??
             int burstCount = (word & BURST_MASK) >>> BURST_SHIFT;
+
+            // Get bits 24 - 2 of the address
             int address = word & ADDRESS_MASK;
+
+            // Shift bits to add two LS zeros
+            address <<= 2;
+
 
             // Ensure trace was valid
             // TODO: Turn this off on prod
@@ -77,11 +89,13 @@ class Analyser {
         }
 
 //        Print distributions of Operations
-//        System.out.println("\n\nData Reads: " + dReads / (tracesToAnalyse/2));
-//        System.out.println("Data Writes: " + dWrites / (tracesToAnalyse/2));
-//        System.out.println("Instruction Reads: " + iReads / (tracesToAnalyse/2));
-//        System.out.println("Skips: " + skips / (tracesToAnalyse/2));
-//        System.out.println(Arrays.toString(types));
+        System.out.println("\n\nData Reads: " + dReads / actualNumTraces);
+        System.out.println("Data Writes: " + dWrites / actualNumTraces);
+        System.out.println("Instruction Reads: " + iReads / actualNumTraces);
+        System.out.println("Skips: " + skips / actualNumTraces);
+        System.out.println(Arrays.toString(types));
+
+        System.out.println("Analysed " + (iReads + dReads + dWrites) + " traces, skipped " + skips);
 
         System.out.println("\nInstruction Cache");
         iCache.printResults();
@@ -89,4 +103,26 @@ class Analyser {
         System.out.println("\nData Cache");
         dCache.printResults();
     }
+
+    /**
+     * Adds missing bits to LSB of the address
+     * Can't just shift left by two places
+     */
+//    private int addMissingBitsToStart(int address) {
+////        System.out.println("Initial Address: " + Integer.toBinaryString(address));
+//
+//        int addressUpper = address & 0xFFFFFF00;
+////        System.out.println("Address Upper: " + Integer.toBinaryString(addressUpper));
+//
+//        int addressLower = address & 0x000000FF;
+////        System.out.println("Address Lower: " + Integer.toBinaryString(addressLower));
+//
+//        addressLower <<= 2;
+////        System.out.println("Address Lower Shifted: " + Integer.toBinaryString(addressLower));
+//
+//        address = addressUpper + addressLower;
+//        return address;
+////        System.out.println("Final Address: " + Integer.toBinaryString(address));
+//
+//    }
 }

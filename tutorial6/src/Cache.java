@@ -24,7 +24,7 @@ class Cache {
     private HashMap<Integer, HashMap<Integer, TagData>> sets;
 
     Cache(int l, int k,  int n){
-         this.l = l;
+        this.l = l;
         this.k = k;
         this.n = n;
         System.out.println("Created " + l + ", " + k + ", " + n + " sets (" + l*k*n + "kb)");
@@ -125,6 +125,7 @@ class Cache {
 
 
     void printResults() {
+        System.out.println("Total received: " + (misses + hits));
         System.out.println("Misses: " + misses);
         System.out.println("Hits: " + hits);
         System.out.println("Hit Rate: " + (float)hits / (hits + misses) );
