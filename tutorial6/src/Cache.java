@@ -1,10 +1,9 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-public class Cache {
+class Cache {
 
-    public final int ADDRESS_SIZE = 25;
+    private final int ADDRESS_SIZE = 25;
 
     private int l;
     private int k;
@@ -30,22 +29,26 @@ public class Cache {
         this.n = n;
         System.out.println("Created " + l + ", " + k + ", " + n + " sets (" + l*k*n + "kb)");
 
+        // Get number of bits for l
         Double math = (Math.log(l) / Math.log(2));
         int lBits = math.intValue();
 
+        // Get number of bits for n
         math = Math.log(n) / Math.log(2);
         int nBits = math.intValue();
         System.out.println(lBits + ", " + nBits);
 
-        // Mask is least significant l bits (after shifting)
+        // Offset mask is least significant l bits (after shifting)
         offsetMask = (1 << lBits) - 1;
         offsetShift = 0;
         System.out.println("Offset Mask: " + Integer.toBinaryString(offsetMask));
 
+        // Set mask is least significant n bits (after shifting)
         setMask = (1 << nBits) - 1;
         setShift = lBits;
         System.out.println("Set Mask: " + Integer.toBinaryString(setMask));
 
+        // Tag mask is least significant remainder of bits (after shifting)
         tagMask = (1 << (ADDRESS_SIZE - lBits - nBits)) -1;
         tagShift = lBits + nBits;
         System.out.println("Tag Mask: " + Integer.toBinaryString(tagMask) + "\n");
@@ -62,17 +65,19 @@ public class Cache {
      * @param burstCount
      */
     void feedAddress(int physicalAddress, int burstCount) throws IllegalArgumentException{
+
+        // Extract the info
         int setNumber = (physicalAddress >> setShift) & setMask;
         int offset = (physicalAddress >> offsetShift) & offsetMask;
         int tagNumber = (physicalAddress >> tagShift) & tagMask;
 
-        // TODO Remove for prod
+        // Ensure values are valid
         if(setNumber < 0 || setNumber > setMask || offset < 0 || offset > offsetMask || tagNumber < 0 || tagNumber > tagMask) {
             String error = "Invalid Cache Values: setNumber: " + setNumber+ ", tagNumber: " + tagNumber + ", offset: " + offset;
             throw new IllegalArgumentException(error);
         }
 
-//        System.out.println("Set: " + setNumber + ", Offset: " + offset + ", Tag: " + tagNumber);
+//        System.out.println("Set: " + setNumber + ", Offset: " + offset + ", Tag: " + tagNumber + ", Burstcount: " +burstCount);
 
         // Get the k tags in this set
         HashMap<Integer, TagData> set = sets.get(setNumber);
@@ -83,19 +88,19 @@ public class Cache {
         // Check for tag match
         if(tagData != null) {
             hits++;
-            System.out.println("Hit found: " + hits);
+//            System.out.println("Hit found: " + hits);
             tagData.lastAccess = ++timestamp;
         } else {
             misses ++;
-            System.out.println("Miss: " + misses);
+//            System.out.println("Miss: " + misses);
 
             // Check if k directories are full
             if(set.values().size() < k) {
-                System.out.println("K Directories not full, inserting..");
+//                System.out.println("K Directories not full, inserting..");
                 set.put(tagNumber, new TagData(++timestamp));
             } else {
                 int lruTag = getLRU(set);
-                System.out.println("Directories full, removing lru: " + lruTag);
+//                System.out.println("Directories full, removing lru: " + lruTag);
                 set.remove(lruTag);
                 set.put(tagNumber, new TagData(++timestamp));
             }
@@ -121,7 +126,7 @@ public class Cache {
 
     void printResults() {
         System.out.println("Misses: " + misses);
-        System.out.println("Hits: " + misses);
+        System.out.println("Hits: " + hits);
         System.out.println("Hit Rate: " + (float)hits / (hits + misses) );
     }
 
@@ -138,8 +143,5 @@ public class Cache {
         TagData(int lastAccess) {
             this.lastAccess = lastAccess;
         }
-
-
-
     }
 }

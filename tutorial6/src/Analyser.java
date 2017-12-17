@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 class Analyser {
 
     private final static boolean DEBUG = false;
@@ -31,12 +29,11 @@ class Analyser {
         int dReads = 0;
         int dWrites = 0;
         int iReads = 0;
-
         int[] types = new int[8];
 
-        float actualNumTraces = traces.length / 2;
 
         int tracesToAnalyse = DEBUG ?  2 * 80 : traces.length;
+        float actualNumTraces = tracesToAnalyse / 2;
 
         for(int i=0;i<tracesToAnalyse; i+=2) {
 
@@ -79,11 +76,12 @@ class Analyser {
             }
         }
 
-        System.out.println("\n\nData Reads: " + dReads / (tracesToAnalyse/2));
-        System.out.println("Data Writes: " + dWrites / (tracesToAnalyse/2));
-        System.out.println("Instruction Reads: " + iReads / (tracesToAnalyse/2));
-        System.out.println("Skips: " + skips / (tracesToAnalyse/2));
-        System.out.println(Arrays.toString(types));
+//        Print distributions of Operations
+//        System.out.println("\n\nData Reads: " + dReads / (tracesToAnalyse/2));
+//        System.out.println("Data Writes: " + dWrites / (tracesToAnalyse/2));
+//        System.out.println("Instruction Reads: " + iReads / (tracesToAnalyse/2));
+//        System.out.println("Skips: " + skips / (tracesToAnalyse/2));
+//        System.out.println(Arrays.toString(types));
 
         System.out.println("\nInstruction Cache");
         iCache.printResults();
@@ -91,6 +89,4 @@ class Analyser {
         System.out.println("\nData Cache");
         dCache.printResults();
     }
-
-
 }

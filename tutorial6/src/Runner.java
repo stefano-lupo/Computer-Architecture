@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,56 +17,51 @@ public class Runner {
 
     public static void main(String... aArgs) throws IOException, IllegalArgumentException{
 
+        // Start a timer
+        final long startTime = System.currentTimeMillis();
+
         // Read the file
         byte[] bytes = readSmallBinaryFile(FILE_NAME);
-//        System.out.println("Small - size of file read in:" + bytes.length + "\n");
 
-//        Inspect some of the traces
-//        displayContents(bytes, 10, 3);
-//        displayContents(bytes, 16, 3);
-//        displayContents(bytes, 2, 3);
-
-
-
-        // Or, using built in java buffer - create an int array from bytes
+        // Create an int array from bytes
         int[] littleEndian = getAsIntArray(bytes, false);
-//        int[] bigEndian = getAsIntArray(bytes, true);
-//        System.out.println("Number of traces 32bit: " + littleEndian.length+ "\n");
+//      System.out.println("Number of traces 32bit: " + littleEndian.length+ "\n");
+
+        // See how long it takes to read the file
+        final long timeAfterRead = System.currentTimeMillis();
 
         // Get subset of integers for examination
-        int[] littleEndianSnippet = Arrays.copyOfRange(littleEndian, 0 , 2);
-//        int[] bigEndianSnippet = Arrays.copyOfRange(bigEndian, 0 , 2);
+//      int[] littleEndianSnippet = Arrays.copyOfRange(littleEndian, 250000 , 250100);
 
         // Print out the contents
-        for(int i=0; i<littleEndianSnippet.length; i++) {
-//            // Print in little endian
-//            System.out.println("Little Endian");
-//            System.out.println(Integer.toString(littleEndianSnippet[i], 16));
-//            System.out.println(Integer.toString(littleEndianSnippet[i]));
-//            System.out.println(Integer.toString(littleEndianSnippet[i], 2) + "\n");
-
-//            // Print in Big endian
-//            System.out.println("Big Endian");
-//            System.out.println(Integer.toString(bigEndianSnippet[i], 16));
-//            System.out.println(Integer.toString(bigEndianSnippet[i]));
-//            System.out.println(Integer.toString(bigEndianSnippet[i], 2) + "\n");
-        }
+//      displayIntArray(littleEndian);
 
         // Write a subset to test file for inspection
-        writeSmallBinaryFile(bytes, OUTPUT_FILE_NAME);
+//      writeSmallBinaryFile(bytes, OUTPUT_FILE_NAME);
 
 
 
-
+        // Create the caches
         Cache iCache = new Cache(16, 1, 1024);
         Cache dCache = new Cache(16, 8, 256);
 
+        // Analyse the cache
         Analyser analyser = new Analyser(iCache, dCache, littleEndian);
-//        Analyser analyser = new Analyser(iCache, dCache, bigEndian);
         analyser.analyse();
 
+        final long finishTime = System.currentTimeMillis();
+
+        System.out.println("\nFile Reading Time: " + (timeAfterRead - startTime) + "ms");
+        System.out.println("Cache Simulation Time: " + (finishTime - timeAfterRead) + "ms");
+        System.out.println("Total Elapsed Time :" + (finishTime - startTime) + "ms");
 
     }
+
+
+    /********************************************************
+     * Helper Methods
+     ********************************************************/
+
 
     // Generate array of 32 bit integers
     private static int[] getAsIntArray(byte[] bytes, boolean bigEndian) {
@@ -77,7 +74,7 @@ public class Runner {
     }
 
 
-    private static void displayContents(byte[] bytes, int radix, int numToShow) {
+    private static void displayBytes(byte[] bytes, int radix, int numToShow) {
         System.out.println("Displaying in base " + radix);
         for(int i=0;i<(numToShow*8); i++){
             if(i % 8 == 0) {
@@ -95,6 +92,15 @@ public class Runner {
         }
 
         System.out.println("\n");
+    }
+
+    private static void displayIntArray(int[] arr) {
+        System.out.println("Hex, Dec, Binary");
+        for(int i=0; i<arr.length; i++) {
+            System.out.println(Integer.toString(arr[i], 16));
+            System.out.println(Integer.toString(arr[i]));
+            System.out.println(Integer.toString(arr[i], 2) + "\n");
+        }
     }
 
     private static byte[] readSmallBinaryFile(String aFileName) throws IOException {

@@ -1,2 +1,6 @@
 .vscode
 *.o
+.idea
+tutorial6/out
+tutorial6/.idea
+tutorial6/tv.txt
