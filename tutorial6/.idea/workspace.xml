@@ -16,7 +16,7 @@
       <file leaf-file-name="Runner.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Runner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-147">
+            <state relative-caret-position="-1218">
               <caret line="29" column="129" lean-forward="false" selection-start-line="29" selection-start-column="129" selection-end-line="29" selection-end-column="129" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -25,27 +25,27 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Analyser.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Analyser.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Analyser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
+            <state relative-caret-position="1344">
               <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Cache.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Cache.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Cache.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="128" column="80" lean-forward="false" selection-start-line="128" selection-start-column="80" selection-end-line="128" selection-end-column="80" />
+            <state relative-caret-position="-273">
+              <caret line="8" column="4" lean-forward="false" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#4518#4519#0" expanded="true" />
-                <element signature="e#4561#4562#0" expanded="true" />
-                <element signature="e#4596#4597#0" expanded="true" />
-                <element signature="e#4648#4649#0" expanded="true" />
+                <element signature="e#4760#4761#0" expanded="true" />
+                <element signature="e#4803#4804#0" expanded="true" />
+                <element signature="e#4838#4839#0" expanded="true" />
+                <element signature="e#4890#4891#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -71,9 +71,9 @@
         <option value="$PROJECT_DIR$/Trace.java" />
         <option value="$PROJECT_DIR$/src/Runner2.java" />
         <option value="$PROJECT_DIR$/src/Trace.java" />
-        <option value="$PROJECT_DIR$/src/Cache.java" />
         <option value="$PROJECT_DIR$/src/Runner.java" />
         <option value="$PROJECT_DIR$/src/Analyser.java" />
+        <option value="$PROJECT_DIR$/src/Cache.java" />
       </list>
     </option>
   </component>
@@ -742,16 +742,15 @@
       <option name="presentableId" value="Default" />
       <updated>1513453558521</updated>
       <workItem from="1513453560697" duration="123000" />
-      <workItem from="1513455620759" duration="32330000" />
+      <workItem from="1513455620759" duration="35585000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32453000" />
+    <option name="totallyTimeSpent" value="35708000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="-11" width="1922" height="1092" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -852,23 +851,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Cache.java">
+    <entry file="file://$PROJECT_DIR$/src/Analyser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="128" column="80" lean-forward="false" selection-start-line="128" selection-start-column="80" selection-end-line="128" selection-end-column="80" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#4518#4519#0" expanded="true" />
-            <element signature="e#4561#4562#0" expanded="true" />
-            <element signature="e#4596#4597#0" expanded="true" />
-            <element signature="e#4648#4649#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1344">
+          <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Runner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-147">
+        <state relative-caret-position="-1218">
           <caret line="29" column="129" lean-forward="false" selection-start-line="29" selection-start-column="129" selection-end-line="29" selection-end-column="129" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -876,11 +869,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Analyser.java">
+    <entry file="file://$PROJECT_DIR$/src/Cache.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="-273">
+          <caret line="8" column="4" lean-forward="false" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4760#4761#0" expanded="true" />
+            <element signature="e#4803#4804#0" expanded="true" />
+            <element signature="e#4838#4839#0" expanded="true" />
+            <element signature="e#4890#4891#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

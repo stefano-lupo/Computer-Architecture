@@ -1,9 +1,11 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 class Cache {
 
-    private final int ADDRESS_SIZE = 25;
+    private static final int DEFAULT_ADDRESS_SIZE = 25;
+
 
     private int l;
     private int k;
@@ -49,7 +51,7 @@ class Cache {
         System.out.println("Set Mask: " + Integer.toBinaryString(setMask));
 
         // Tag mask is least significant remainder of bits (after shifting)
-        tagMask = (1 << (ADDRESS_SIZE - lBits - nBits)) -1;
+        tagMask = (1 << (DEFAULT_ADDRESS_SIZE - lBits - nBits)) -1;
         tagShift = lBits + nBits;
         System.out.println("Tag Mask: " + Integer.toBinaryString(tagMask) + "\n");
 
@@ -124,6 +126,17 @@ class Cache {
     }
 
 
+    HashSet<Integer> getAdjacentOffsets(int offset) {
+        HashSet<Integer> offsets = new HashSet<>(l, 1);
+
+        for(int i=0; i<4; i++) {
+            offsets.add(offset);
+            offset = (offset + 4) % 16;
+        }
+
+        return offsets;
+    }
+
     void printResults() {
         System.out.println("Total received: " + (misses + hits));
         System.out.println("Misses: " + misses);
@@ -135,7 +148,6 @@ class Cache {
     class TagData {
 
         int lastAccess;
-        int data;
 
         TagData() {
             this.lastAccess = 0;
