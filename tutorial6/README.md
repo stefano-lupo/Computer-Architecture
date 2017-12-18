@@ -69,7 +69,31 @@ The Cache class also has the `feedAddress(int physicalAddress, int burstCount)` 
       - else remove LRU tag (the tag with the lowest `timestamp` integer) and replace it with the new tag.
 
 ## Simulation Results
+The simulation produced the following results.
+```
+Data Reads: 41.870308%
+Data Writes: 14.540052%
+Instruction Reads: 40.848686%
+Skips: 2.7409554%
+Cycle Types (encoded): [8836, 38901, 100, 9645, 856659, 0, 878084, 304927]
+Analysed 2039670 traces, skipped 57482
 
+Instruction Cache
+Total accesses: 3426555
+Misses: 128052
+Hits: 3298503
+Hit Rate: 96.262955%
+
+Data Cache
+Total accesses: 1188855
+Misses: 31778
+Hits: 1157077
+Hit Rate: 97.327%
+
+File Reading Time: 70ms
+Cache Simulation Time: 214ms
+Total Elapsed Time: 284ms
+```
 
 
 
