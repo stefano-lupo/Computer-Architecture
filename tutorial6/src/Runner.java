@@ -50,7 +50,7 @@ public class Runner {
 
         System.out.println("\nFile Reading Time: " + (timeAfterRead - startTime) + "ms");
         System.out.println("Cache Simulation Time: " + (finishTime - timeAfterRead) + "ms");
-        System.out.println("Total Elapsed Time :" + (finishTime - startTime) + "ms");
+        System.out.println("Total Elapsed Time: " + (finishTime - startTime) + "ms");
 
     }
 

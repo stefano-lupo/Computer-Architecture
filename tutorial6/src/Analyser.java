@@ -3,7 +3,7 @@ import java.util.Arrays;
 class Analyser {
 
     private final static boolean DEBUG = false;
-    private final static int MAX_TRACES_TO_PROCESS = 100;
+    private final static int DEBUG_MAX_TRACES_TO_PROCESS = 100;
 
     private final static int ADDRESS_MASK = 0x007FFFFF;
     private final static int CYCLE_MASK = 0xE0000000;
@@ -70,7 +70,7 @@ class Analyser {
         int[] types = new int[8];
 
         // Process some or all of the traces
-        int tracesToAnalyse = DEBUG ?  2 * MAX_TRACES_TO_PROCESS : traces.length;
+        int tracesToAnalyse = DEBUG ?  2 * DEBUG_MAX_TRACES_TO_PROCESS : traces.length;
         System.out.println("Analysing traces: " + tracesToAnalyse / 2);
 
         // We only actually process half that number of traces since there is two words per trace
@@ -123,11 +123,11 @@ class Analyser {
         }
 
         // Print the distributions of cycle types and other info
-        System.out.println("\n\nData Reads: " + dataReads / actualNumTraces);
-        System.out.println("Data Writes: " + dataWrites / actualNumTraces);
-        System.out.println("Instruction Reads: " + instructionReads / actualNumTraces);
-        System.out.println("Skips: " + skips / actualNumTraces);
-        System.out.println(Arrays.toString(types));
+        System.out.println("\n\nData Reads: " + dataReads * 100 / actualNumTraces + "%");
+        System.out.println("Data Writes: " + dataWrites * 100 / actualNumTraces+ "%");
+        System.out.println("Instruction Reads: " + instructionReads * 100  / actualNumTraces + "%");
+        System.out.println("Skips: " + skips * 100 / actualNumTraces + "%");
+        System.out.println("Cycle Types (encoded): " + Arrays.toString(types));
         System.out.println("Analysed " + (instructionReads + dataReads + dataWrites) + " traces, skipped " + skips);
 
         System.out.println("\nInstruction Cache");
@@ -139,7 +139,7 @@ class Analyser {
 
     /**
      * Adds missing bits to LSB of the address
-     * This is NOT used as I _think_ its the same as the shifting done instead
+     * This is **NOT** used as I _think_ its the same as the shifting done instead
      */
     private int addMissingBitsToStart(int address) {
         // System.out.println("Initial Address: " + Integer.toBinaryString(address));

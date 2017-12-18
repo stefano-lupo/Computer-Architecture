@@ -51,26 +51,26 @@ class Cache {
 
         // Get number of bits for l
         Double math = (Math.log(l) / Math.log(2));
-        int lBits = math.intValue();
+        int offsetBits = math.intValue();
 
         // Get number of bits for n
         math = Math.log(n) / Math.log(2);
-        int nBits = math.intValue();
-        System.out.println(lBits + ", " + nBits);
+        int setBits = math.intValue();
+        System.out.println(offsetBits + ", " + setBits);
 
         // Offset mask is least significant l bits (after shifting)
-        offsetMask = (1 << lBits) - 1;
+        offsetMask = (1 << offsetBits) - 1;
         offsetShift = 0;
         System.out.println("Offset Mask: " + Integer.toBinaryString(offsetMask));
 
         // Set mask is least significant n bits (after shifting)
-        setMask = (1 << nBits) - 1;
-        setShift = lBits;
+        setMask = (1 << setBits) - 1;
+        setShift = offsetBits;
         System.out.println("Set Mask: " + Integer.toBinaryString(setMask));
 
         // Tag mask is least significant remainder of bits (after shifting)
-        tagMask = (1 << (addressSize - lBits - nBits)) -1;
-        tagShift = lBits + nBits;
+        tagMask = (1 << (addressSize - offsetBits - setBits)) -1;
+        tagShift = offsetBits + setBits;
         System.out.println("Tag Mask: " + Integer.toBinaryString(tagMask) + "\n");
 
         // Instantiate the hash maps for our cache
@@ -100,8 +100,8 @@ class Cache {
         }
 
         // Display the values
-        System.out.println("\n" + Integer.toHexString(physicalAddress));
-        System.out.println("Set: " + setNumber + ", Offset: " + offset + ", Tag: " + tagNumber + ", Burstcount: " +burstCount);
+        // System.out.println("\n" + Integer.toHexString(physicalAddress));
+        // System.out.println("Set: " + setNumber + ", Offset: " + offset + ", Tag: " + tagNumber + ", Burstcount: " +burstCount);
 
         // Get the k tags in this set
         HashMap<Integer, TagData> set = sets.get(setNumber);
@@ -111,13 +111,13 @@ class Cache {
 
         // Check for tag match
         if(tagData != null) {
-            System.out.println(Integer.toHexString(physicalAddress) + ": Hit found");
+            // System.out.println(Integer.toHexString(physicalAddress) + ": Hit found");
             hits += burstCount + 1;
 
             // Update this tags last access time
             tagData.lastAccess = ++timestamp;
         } else {
-            System.out.println(Integer.toHexString(physicalAddress) + ": Miss");
+            // System.out.println(Integer.toHexString(physicalAddress) + ": Miss");
             misses++;
 
             // Think the memory address that were adjacent count as hits since they will technically be read from the cache?
@@ -125,11 +125,11 @@ class Cache {
 
             // Check if k directories are full
             if(set.values().size() < k) {
-                System.out.println("Compulsory miss - k directories not full, inserting..");
+                // System.out.println("Compulsory miss - k directories not full, inserting..");
                 set.put(tagNumber, new TagData(++timestamp));
             } else {
                 int lruTag = getLRU(set);
-                System.out.println(Integer.toHexString(physicalAddress) + ": directory full, removing lru: " + lruTag);
+                // System.out.println(Integer.toHexString(physicalAddress) + ": directory full, removing lru: " + lruTag);
                 set.remove(lruTag);
                 set.put(tagNumber, new TagData(++timestamp));
             }
@@ -162,10 +162,10 @@ class Cache {
      * Prints the results of the simulation
      */
     void printResults() {
-        System.out.println("Total received: " + (misses + hits));
+        System.out.println("Total accesses: " + (misses + hits));
         System.out.println("Misses: " + misses);
         System.out.println("Hits: " + hits);
-        System.out.println("Hit Rate: " + (float)hits / (hits + misses) );
+        System.out.println("Hit Rate: " + (float)hits * 100 / (hits + misses) + "%");
     }
 
     /**
