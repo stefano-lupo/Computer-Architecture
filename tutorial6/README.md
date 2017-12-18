@@ -1,14 +1,15 @@
 # Cache Simulation
+### Stefano Lupo - 14334933 - SS Computer Engineering - 16/12/17
 The repository contains the code for simulating the operations of an instruction cache and data cache. A trace of over 2 million physical addresses collected from an Intel i486 microprocessor while gcc was compiling a program is used as the list of addresses requested from the cache by the CPU.
 
 ## Setup
 The setup contaions two caches - one for instructions and one for data. The instruction cache is a 16KB direct mapped cache *(L=16, K=1, N=1024)* and the data cache is a an 8-way 32KB cache *(L=16, K=8, N=256)*. Both caches have L=16 bytes meaning four separate 32bit words can be stored in each cache line. 
 
-The instruction cache is direct mapped *(K=1)* meaning it has only one tag in each set. Thus the `tag` extracted from each physical is compared with exactly one tag in the cache. 
+The instruction cache is direct mapped *(K=1)* meaning it has only one tag in each set. Thus the `tag` extracted from each physical address is compared with exactly one tag in the cache. 
 
 The data cache is a set associative cache containing *N=256* sets with *K=8* directories in each. The set number is first extracted from the physical address and used to select the relevant set. Each of the k tags in that set are then compared in parallel against the tag extracted from the physical address. If a match is found, the data can then be returned.
 
-The traces contain a `burstCount` field which represents the number of adjacent (same set and directory) addresses the CPU would like to retrieve from the cache. As discussed, there are four 32 bit words in each cache line *(L=16)* and all four of these words may be retrieved simultaneously from the cache in one operation. When reading data from memory address *A*, the 3 memory addresses adjacent to **A** may also be read simultaneously into the other three words in the same cache line. This takes advantage of *locality of reference* - addresses nearby to an address that has just been read are likely to be required in the future. Thus caching these ahead of time provides a significant performance improvement.  
+The traces contain a `burstCount` field which represents the number of adjacent (same set and directory) addresses the CPU would like to retrieve from the cache. As discussed, there are four 32 bit words in each cache line *(L=16)* and all four of these words may be retrieved simultaneously from the cache in one operation. When reading data from memory address *A*, the 3 memory addresses adjacent to **A** (modulo 16 bytes alligned on a 16 byte boundary) may also be read simultaneously into the other three words in the same cache line. This takes advantage of *locality of reference* - addresses nearby to an address that has just been read are likely to be required in the future. Thus caching these ahead of time provides a significant performance improvement.  
 
 When the cache inevitably fills up, a protocol must be put in place in order to replace entries in the cache. The protocol used was **Least Recently Used** meaning the tags that had not been accessed in the longest amount of time were evicted first. 
 
@@ -66,7 +67,7 @@ The Cache class also has the `feedAddress(int physicalAddress, int burstCount)` 
     - if `tagData` is not null, this is a cache hit: `hits += (burstCount + 1)`
     - else it was a miss: `hits += burstCount`, `misses++`
       - if the k directories are not all filled - insert the new tag in the empty directory
-      - else remove LRU tag (the tag with the lowest `timestamp` integer) and replace it with the new tag.
+      - else remove LRU tag (the tag with the lowest `timestamp` integer) in that set and replace it with the new tag.
 
 ## Simulation Results
 The simulation produced the following results.
