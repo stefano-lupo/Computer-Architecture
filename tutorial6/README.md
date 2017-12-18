@@ -1,4 +1,5 @@
 # Cache Simulation
+### Stefano Lupo - 14334933 - SS Computer Engineering - 16/12/17
 The repository contains the code for simulating the operations of an instruction cache and data cache. A trace of over 2 million physical addresses collected from an Intel i486 microprocessor while gcc was compiling a program is used as the list of addresses requested from the cache by the CPU.
 
 ## Setup
